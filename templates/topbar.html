@@ -1,0 +1,47 @@
+{% load static %}
+{% load url_replace %}
+
+<div class="container-fluid">
+
+    <div class="row align-items-center py-3 px-xl-5">
+
+        <div class="col-lg-3 d-none d-lg-block">
+            <a href="" class="text-decoration-none">
+                <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Commerce</h1>
+            </a>
+        </div>
+
+        <div class="col-lg-6 col-6 text-left">
+            <form action="{% url 'orders:list' %}">
+                <div class="input-group">
+                    {% if query and query != 'None' %}
+                    <input type="text" name="query" class="form-control" placeholder="{{ query }}">
+                    {% else %}
+                    <input type="text" name="query" class="form-control" placeholder="Search for products">
+                    {% endif %}
+                    <div class="input-group-append">
+                        <span class="input-group-text bg-transparent text-primary">
+                            <i class="fa fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <input type="hidden" name="sort" value="{{ sort }}" />
+                {% for category in category_filters %}
+                <input type="hidden" name="category" value="{{ category }}" />
+                {% endfor %}
+
+
+            </form>
+        </div>
+
+        <div class="col-lg-3 col-6 text-right">
+            <a href="{% url 'orders:cart' %}" class="btn border">
+                <i class="fas fa-shopping-cart text-primary"></i>
+                <span class="badge">{{ order.item_count }}</span>
+            </a>
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,30 @@
+[
+  {
+    "model": "orders.category",
+    "pk": 1,
+    "fields": {
+      "name": "dress"
+    }
+  },
+  {
+    "model": "orders.category",
+    "pk": 2,
+    "fields": {
+      "name": "shirt"
+    }
+  },
+  {
+    "model": "orders.category",
+    "pk": 3,
+    "fields": {
+      "name": "jacket"
+    }
+  },
+  {
+    "model": "orders.category",
+    "pk": 4,
+    "fields": {
+      "name": "shoes"
+    }
+  }
+]

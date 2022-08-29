@@ -1,0 +1,21 @@
+{% load static %}
+
+<html lang="en">
+
+<head>
+    {% include 'head.html' %}
+</head>
+
+<body>
+    {% include 'topbar.html' %}
+    {% include 'navbar.html' %}
+
+    {% block content %}{% endblock content %}
+
+    {% include 'footer.html' %}
+    {% include 'back_to_top.html' %}
+
+    {% block scripts %}{% endblock scripts %}
+</body>
+
+</html>

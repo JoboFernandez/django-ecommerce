@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5">
+        <div class="col-lg-8 table-responsive mb-5">
+            <table class="table table-bordered text-center mb-0">
+                <thead class="bg-secondary text-dark">
+                    <tr>
+                        <th>Products</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody class="align-middle">
+                    {% for item in order_items %}
+                    <tr>
+                        <td class="align-middle">
+                            <a href="{% url 'orders:detail' item.product.id %}" class="text-decoration-none">
+                                <img src="{{ item.product.image.url }}" alt="" style="width: 50px;">{{ item.product|title }}
+                            </a>
+                        </td>
+                        {% with item.product.discounted_price|floatformat:2 as unit_price %}
+                        <td class="align-middle">${{ unit_price|intcomma }}</td>
+                        {% endwith %}
+                        <td class="align-middle">
+                            <div class="input-group quantity mx-auto" style="width: 100px;">
+                                <div class="input-group-btn">
+                                    <button data-product="{{ item.product.id }}" data-action="subtract" class="btn btn-sm btn-primary btn-minus update-cart" >
+                                    <i class="fa fa-minus"></i>
+                                    </button>
+                                </div>
+                                <input type="text" class="form-control form-control-sm bg-secondary text-center" value="{{ item.quantity }}">
+                                <div class="input-group-btn">
+                                    <button data-product="{{ item.product.id }}" data-action="add" class="btn btn-sm btn-primary btn-plus update-cart">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                        {% with item.total|floatformat:2 as total %}
+                        <td class="align-middle">${{ total|intcomma }}</td>
+                        {% endwith %}
+
+                        <td class="align-middle">
+                            <button data-product="{{ item.product.id }}" data-action="remove" class="btn btn-sm btn-primary update-cart">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-secondary mb-5">
+                <div class="card-header bg-secondary border-0">
+                    <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3 pt-1">
+                        <h6 class="font-weight-medium">Subtotal</h6>
+                        {% with order.total|floatformat:2 as total %}
+                        <h6 class="font-weight-medium">${{ total|intcomma }}</h6>
+                        {% endwith %}
+                    </div>
+                </div>
+                <div class="card-footer border-secondary bg-transparent">
+                    <div class="d-flex justify-content-between mt-2">
+                        <h5 class="font-weight-bold">Total</h5>
+                        {% with order.total|floatformat:2 as total %}
+                        <h5 class="font-weight-bold">${{ total|intcomma }}</h5>
+                        {% endwith %}
+                    </div>
+                    <a href="{% url 'orders:checkout' %}" class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% include 'scripts.html' %}
+{% endblock scripts %}

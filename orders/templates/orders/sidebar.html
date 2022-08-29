@@ -1,0 +1,47 @@
+{% load static %}
+
+<div class="col-lg-3 col-md-12">
+    <form action="{% url 'orders:list' %}">
+
+        <div class="border-bottom mb-4 pb-4">
+            <h5 class="font-weight-semi-bold mb-4">Categories</h5>
+            {% for category in categories %}
+            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <input type="checkbox" class="custom-control-input" id="price-{{ category.id }}" name="category" value="{{ category.name }}" {% if category.name in category_filters %}checked{% endif %}>
+                <label class="custom-control-label" for="price-{{ category.id }}">{{ category.name }}</label>
+                <span class="badge border font-weight-normal">{{ category.product_set.count }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="border-bottom mb-4 pb-4">
+            <h5 class="font-weight-semi-bold mb-4">Sort By</h5>
+
+            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <input type="radio" class="custom-control-input" id="price-asc" name="sort" value="discounted_price" {% if sort == 'discounted_price' %}checked{% endif %}>
+                <label class="custom-control-label" for="price-asc">Price (Ascending)</label>
+            </div>
+            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <input type="radio" class="custom-control-input" id="price-desc" name="sort" value="-discounted_price" {% if sort == '-discounted_price' %}checked{% endif %}>
+                <label class="custom-control-label" for="price-desc">Price (Descending)</label>
+            </div>
+            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <input type="radio" class="custom-control-input" id="arrival-asc" name="sort" value="date_added" {% if sort == 'date_added' %}checked{% endif %}>
+                <label class="custom-control-label" for="arrival-asc">Arrival (Ascending)</label>
+            </div>
+            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <input type="radio" class="custom-control-input" id="arrival-desc" name="sort" value="-date_added" {% if sort == '-date_added' %}checked{% endif %}>
+                <label class="custom-control-label" for="arrival-desc">Arrival (Descending)</label>
+            </div>
+
+        </div>
+
+        <div>
+          <input type="hidden" name="query" value="{{ query }}" />
+        </div>
+
+        <div>
+            <button class="btn btn-primary btn-block border-0 py-3" type="submit">Filter Products</button>
+        </div>
+    </form>
+</div>

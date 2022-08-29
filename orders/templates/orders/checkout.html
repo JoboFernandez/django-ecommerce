@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5">
+
+        <div class="col-lg-8">
+
+            <div class="card border-secondary mb-5">
+                <div class="card-header bg-secondary border-0">
+                    <h4 class="font-weight-semi-bold m-0">Order Total</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="font-weight-medium mb-3">Products</h5>
+
+                    {% for item in order_items %}
+                    <div class="d-flex justify-content-between">
+                        <p>{{ item|title }}</p>
+                        <p>${{ item.total|intcomma|floatformat:2 }}</p>
+                    </div>
+                    {% endfor %}
+
+                    <hr class="mt-0">
+                    <div class="d-flex justify-content-between mb-3 pt-1">
+                        <h6 class="font-weight-medium">Subtotal</h6>
+                        {% with order.total|floatformat:2 as subtotal %}
+                        <h6 class="font-weight-medium">${{ subtotal|intcomma }}</h6>
+                        {% endwith %}
+                    </div>
+                </div>
+                <div class="card-footer border-secondary bg-transparent">
+                    <div class="d-flex justify-content-between mt-2">
+                        <h5 class="font-weight-bold">Total</h5>
+                        {% with order.total|floatformat:2 as total %}
+                        <h5 class="font-weight-bold">${{ total|intcomma }}</h5>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <form id="shipping-address" class="card border-secondary mb-5">
+                <div class="card-header bg-secondary border-0 mb-4">
+                    <h4 class="font-weight-semi-bold mb-4">Shipping Address</h4>
+                </div>
+                <div class="row mx-1">
+                    <div class="col-md-12 form-group">
+                        <label>Address</label>
+                        <input name="address" class="form-control" type="text" placeholder="Address">
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <label>City</label>
+                        <input name="city" class="form-control" type="text" placeholder="City">
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <label>State</label>
+                        <input name="state" class="form-control" type="text" placeholder="State">
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <label>ZIP Code</label>
+                        <input name="zipcode" class="form-control" type="text" placeholder="ZIP Code">
+                    </div>
+                </div>
+
+            </form>
+
+            <div class="card border-secondary mb-5">
+                <div class="card-header bg-secondary border-0">
+                    <h4 class="font-weight-semi-bold m-0">Payment</h4>
+                </div>
+                <div class="m-2">
+                    <div id="paypal-button-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{% include 'scripts.html' %}
+
+<script src="https://www.paypal.com/sdk/js?client-id=AUBFxtP_M3r6Q3kSGtw4lFSQE1KvT3wGGMcKs9bPSo72fHozyko2olrPd0xGFXm6sVO21l11u78Uxdkm&currency=USD"></script>
+
+<script>
+    var total = "{{ order.total }}"
+
+    // Render the PayPal button into #paypal-button-container
+    paypal.Buttons({
+
+        // Set up the transaction
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: parseFloat(total).toFixed(2)
+                    }
+                }]
+            });
+        },
+
+        // Finalize the transaction
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(orderData) {
+                processPayment()
+            });
+        }
+    }).render('#paypal-button-container');
+</script>
+
+<script type="text/javascript">
+    var shippingAddress = document.getElementById('shipping-address')
+
+    function processPayment() {
+        var shippingInfo = {
+            'address': shippingAddress.address.value,
+            'city': shippingAddress.city.value,
+            'state': shippingAddress.state.value,
+            'zipcode': shippingAddress.zipcode.value,
+            'total': total,
+        }
+        var url = "/shop/process_order/"
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application.json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+                'shippingInfo': shippingInfo,
+            })
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+            console.log("Data:", data);
+            alert("Transaction Completed");
+            window.location.href = "{% url 'index' %}";
+        })
+    }
+
+
+</script>
+{% endblock scripts %}
